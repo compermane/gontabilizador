@@ -12,8 +12,8 @@ type Handler struct {
 	store types.EnsaioStore
 }
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(store types.EnsaioStore) *Handler {
+	return &Handler{store: store}
 }
 
 func (h *Handler) RegistroRoutes(router *mux.Router) {

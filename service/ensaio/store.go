@@ -24,3 +24,7 @@ func (s *Store) CreateEnsaio(ensaio types.Ensaio) error {
 
 	return nil
 }
+
+func (s *Store) GetEnsaioByID(id int) (*types.Ensaio, error) {
+	return nil, nil
+}

@@ -5,6 +5,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/compermane/gontabilizador/cmd/render"
+	"github.com/compermane/gontabilizador/service/ensaio"
+	"github.com/compermane/gontabilizador/service/presenca"
 	"github.com/compermane/gontabilizador/service/ritmista"
 	"github.com/gorilla/mux"
 )
@@ -25,9 +28,21 @@ func (s *APIServer) Run() error {
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 	
-	ritmistaStore := ritmista.NewStore(s.db)
+	ritmistaStore   := ritmista.NewStore(s.db)
 	ritmistaHandler := ritmista.NewHandler(ritmistaStore)
-	ritmistaHandler.PresencaRoutes(subrouter)
+	ritmistaHandler.RegistroRoutes(subrouter)
+
+	ensaioStore     := ensaio.NewStore(s.db)
+	ensaioHandler   := ensaio.NewHandler(ensaioStore)
+	ensaioHandler.RegistroRoutes(subrouter)
+
+	presencaStore   := presenca.NewStore(s.db)
+	presencaHandler := presenca.NewHandler(presencaStore)
+	presencaHandler.PresencaRoutes(subrouter)
+
+
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	router.HandleFunc("/", render.HomeRender)
 
 	log.Println("[APIServer] Listening on ", s.addr)
 	return http.ListenAndServe(s.addr, router)

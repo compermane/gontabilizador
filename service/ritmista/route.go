@@ -21,18 +21,6 @@ func (h *Handler) RegistroRoutes(router *mux.Router) {
 	router.HandleFunc("/registro", h.handleRegistro).Methods("POST")
 }
 
-func (h *Handler) PresencaRoutes(router *mux.Router) {
-	router.HandleFunc("/presente", h.handlePresenca).Methods("POST")
-	router.HandleFunc("/falta",    h.handleFalta).Methods("POST")
-}
-
-func (h *Handler) handlePresenca(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (h *Handler) handleFalta(w http.ResponseWriter, r *http.Request) {
-	
-}
 
 func (h *Handler) handleRegistro(w http.ResponseWriter, r *http.Request) {
 	var payload types.RegisterRitmistaPayload

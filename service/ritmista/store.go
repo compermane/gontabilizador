@@ -42,6 +42,15 @@ func (s *Store) GetRitmistaByID(id int) (*types.Ritmista, error) {
 }
 
 func (s *Store) CreateRitmista(user types.Ritmista) error {
+	_, err := s.db.Query("INSERT INTO ritmista (nome, modulo, naipe) VALUES (?, ?, ?)",
+						user.Nome,
+						user.Modulo,
+						user.Naipe)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -36,3 +36,19 @@ type RegisterEnsaioPayload struct {
 	Data time.Time `json:"data"`
 	Nome string    `json:"nome"`
 }
+
+type PresencaStore interface {
+	CreatePresenca(Presenca) error
+}
+
+type Presenca struct {
+	IDRitmista int  `json:"id_ritmista"`
+	IDEnsaio   int  `json:"id_ensaio"`
+	Presente   bool `json:"presente"`
+}
+
+type RegisterPresencaPayload struct {
+	IDRitmista int  `json:"id_ritmista"`
+	IDEnsaio   int  `json:"id_ensaio"`
+	Presente   bool `json:"presente"`
+}
