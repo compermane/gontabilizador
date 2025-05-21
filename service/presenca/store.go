@@ -2,6 +2,7 @@ package presenca
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/compermane/gontabilizador/types"
 )
@@ -15,6 +16,7 @@ func NewStore(db *sql.DB) *Store {
 }
 
 func (s *Store) CreatePresenca(presenca types.Presenca) error {
+	log.Printf("[CreatePresenca] executed on ensaio %v and ritmista %v\n", presenca.IDEnsaio, presenca.IDRitmista)
 	_, err := s.db.Query("INSERT INTO presenca (ritmista_id, ensaio_id, present) VALUES (?, ?, ?)",
 						 presenca.IDRitmista,
 						 presenca.IDEnsaio,
@@ -25,4 +27,24 @@ func (s *Store) CreatePresenca(presenca types.Presenca) error {
 	}
 
 	return nil
+}
+
+func (s *Store) ListPresencasPorEnsaio(ensaio_id int) ([]int, error) {
+	rows, err := s.db.Query("SELECT ritmista_id FROM presenca WHERE ensaio_id = ? AND present = TRUE", ensaio_id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var ids []int
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+
+		ids = append(ids, id)
+	}
+
+	return ids, nil
 }

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"strconv"
 
 	"github.com/compermane/gontabilizador/types"
 )
@@ -18,6 +19,8 @@ type PageHandler struct {
 type DataForPresenca struct {
 	Ritmistas []*types.Ritmista
 	Ensaios   []*types.Ensaio
+    SelectedEnsaioID  int
+    PresencaMap       map[int]bool 
 }
 
 func NewPageHandler(rs types.RitmistaStore, es types.EnsaioStore, ps types.PresencaStore) *PageHandler {
@@ -85,7 +88,15 @@ func (ph *PageHandler) Presencas(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := DataForPresenca{Ritmistas: ritmistas, Ensaios: ensaios}
+	ensaioID, _  := strconv.Atoi(r.URL.Query().Get("ensaio_id"))
+	presencas, _ := ph.PresencaStore.ListPresencasPorEnsaio(ensaioID)
+	
+	presencaMap := map[int]bool{}
+	for _, p := range presencas {
+		presencaMap[p] = true
+	}
+
+	data := DataForPresenca{Ritmistas: ritmistas, Ensaios: ensaios, SelectedEnsaioID: ensaioID, PresencaMap: presencaMap}
 
 	tmplPath := filepath.Join("static", "templates", "presencas.html")
 	tmpl, err := template.ParseFiles(tmplPath)
@@ -95,9 +106,11 @@ func (ph *PageHandler) Presencas(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println("[Presencas] SelectedEnsaioID:", ensaioID)
 	err = tmpl.Execute(w, data)
 	if err != nil {
 		log.Println("Erro ao renderizar template:", err)
 		http.Error(w, "Erro ao renderizar página", http.StatusInternalServerError)
+		return
 	}
 }

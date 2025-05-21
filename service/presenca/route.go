@@ -28,13 +28,15 @@ func (h *Handler) handlePresenca(w http.ResponseWriter, r *http.Request) {
 	var payload types.RegisterPresencaPayload
 	if err := r.ParseForm(); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
+		return
 	}
 
 	id_ensaio, _ := strconv.Atoi(r.FormValue("ensaio_id"))
-	id_ritmistas := r.Form["presenca_ids"]
+	id_ritmistas := r.Form["presentes"]
 
 	for _, id := range id_ritmistas {
 		id_int, _ := strconv.Atoi(id)
+		log.Printf("[handlePresenca] %v %v %v %v\n", r.Form["ensaio_id"], id_ensaio, id, id_int)
 		payload = types.RegisterPresencaPayload{
 			IDEnsaio: id_ensaio,
 			IDRitmista: id_int,
@@ -53,6 +55,6 @@ func (h *Handler) handlePresenca(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	log.Println("[handlePresenca] succesfully executed")
+	log.Printf("[handlePresenca] succesfully executed on ensaio %v and ritmista %v\n", payload.IDEnsaio, payload.IDRitmista)
 	http.Redirect(w, r, "/presencas", http.StatusSeeOther)
 }

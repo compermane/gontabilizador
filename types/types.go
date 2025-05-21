@@ -41,6 +41,7 @@ type RegisterEnsaioPayload struct {
 
 type PresencaStore interface {
 	CreatePresenca(Presenca) error
+	ListPresencasPorEnsaio(int) ([]int, error)
 }
 
 type Presenca struct {

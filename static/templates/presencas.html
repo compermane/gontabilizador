@@ -7,35 +7,28 @@
 <body>
     <h2>Registrar Presença</h2>
 
-    <form action="/api/v1/registrar-presenca" method="POST">
-        <label for="ensaio">Ensaio:</label>
-        <select name="ensaio_id" id="ensaio">
+    <form method="GET" action="/presencas">
+        <label for="ensaio">Selecione o Ensaio:</label>
+        <select name="ensaio_id" id="ensaio" onchange="this.form.submit()">
             {{range .Ensaios}}
-            <option value="{{.ID}}">{{.Nome}} {{.Data}}</option>
+            <option value="{{.ID}}" {{if eq $.SelectedEnsaioID .ID}}selected{{end}}>{{.Nome}} {{.Data}}</option>
             {{end}}
         </select>
-
-        <h3>Ritmistas</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Presente</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{range .Ritmistas}}
-                <tr>
-                    <td>{{.Nome}}</td>
-                    <td>
-                        <input type="checkbox" name="presenca_ids" value="{{.ID}}">
-                    </td>
-                </tr>
-                {{end}}
-            </tbody>
-        </table>
-
-        <button type="submit">Registrar</button>
+    </form>
+    <p>Selected Ensaio ID: {{.SelectedEnsaioID}}</p>
+    <form method="POST" action="/api/v1/registrar-presenca">
+        <input type="hidden" id="ensaio_id" name="ensaio_id" value="{{.SelectedEnsaioID}}" />
+    
+        {{range .Ritmistas}}
+        <div>
+            <label>
+                <input type="checkbox" name="presentes" value="{{.ID}}" {{if (index $.PresencaMap .ID)}}checked{{end}}>
+                {{.Nome}}
+            </label>
+        </div>
+        {{end}}
+    
+        <button type="submit">Salvar Presenças</button>
     </form>
 </body>
 </html>
