@@ -24,6 +24,7 @@ type RegisterRitmistaPayload struct {
 
 type EnsaioStore interface {
 	GetEnsaioByID(id int) (*Ensaio, error)
+	GetAllEnsaios() ([]*Ensaio, error)
 	CreateEnsaio(Ensaio) error
 }
 

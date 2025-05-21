@@ -44,6 +44,8 @@ func (s *APIServer) Run() error {
 
 	renderHandler := render.NewPageHandler(ritmistaStore, ensaioStore, presencaStore)
 	router.HandleFunc("/", renderHandler.Home).Methods("GET")
+	router.HandleFunc("/ensaios", renderHandler.Ensaios).Methods("GET")
+	router.HandleFunc("/presencas", renderHandler.Presencas).Methods("GET")
 
 	log.Println("[APIServer] Listening on ", s.addr)
 	return http.ListenAndServe(s.addr, router)

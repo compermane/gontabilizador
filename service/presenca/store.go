@@ -15,7 +15,7 @@ func NewStore(db *sql.DB) *Store {
 }
 
 func (s *Store) CreatePresenca(presenca types.Presenca) error {
-	_, err := s.db.Query("INSERT INTO presenca VALUES (ritmista_id, ensaio_id, presente) VALUES (?, ?, ?)",
+	_, err := s.db.Query("INSERT INTO presenca (ritmista_id, ensaio_id, present) VALUES (?, ?, ?)",
 						 presenca.IDRitmista,
 						 presenca.IDEnsaio,
 						 presenca.Presente)

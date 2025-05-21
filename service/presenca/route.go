@@ -1,7 +1,9 @@
 package presenca
 
 import (
+	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/compermane/gontabilizador/types"
 	"github.com/compermane/gontabilizador/utils"
@@ -21,21 +23,36 @@ func (h *Handler) PresencaRoutes(router *mux.Router) {
 }
 
 func (h *Handler) handlePresenca(w http.ResponseWriter, r *http.Request) {
+	log.Println("[handlePresenca] executed")
+
 	var payload types.RegisterPresencaPayload
-	if err := utils.ParseJSON(r, payload); err != nil {
+	if err := r.ParseForm(); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
 
-	err := h.store.CreatePresenca(types.Presenca{
-		IDRitmista: payload.IDRitmista,
-		IDEnsaio: payload.IDRitmista,
-		Presente: payload.Presente,
-	})
+	id_ensaio, _ := strconv.Atoi(r.FormValue("ensaio_id"))
+	id_ritmistas := r.Form["presenca_ids"]
 
-	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
-		return
+	for _, id := range id_ritmistas {
+		id_int, _ := strconv.Atoi(id)
+		payload = types.RegisterPresencaPayload{
+			IDEnsaio: id_ensaio,
+			IDRitmista: id_int,
+			Presente: true,
+		}
+
+		err := h.store.CreatePresenca(types.Presenca{
+			IDRitmista: payload.IDRitmista,
+			IDEnsaio: payload.IDEnsaio,
+			Presente: payload.Presente,
+		})
+
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+			return
+		}
 	}
 
-	utils.WriteJSON(w, http.StatusCreated, nil)
+	log.Println("[handlePresenca] succesfully executed")
+	http.Redirect(w, r, "/presencas", http.StatusSeeOther)
 }

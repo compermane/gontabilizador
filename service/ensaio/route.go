@@ -1,7 +1,9 @@
 package ensaio
 
 import (
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/compermane/gontabilizador/types"
 	"github.com/compermane/gontabilizador/utils"
@@ -17,13 +19,22 @@ func NewHandler(store types.EnsaioStore) *Handler {
 }
 
 func (h *Handler) RegistroRoutes(router *mux.Router) {
-	router.HandleFunc("/criar-ensaio", h.handleCriarEnsaio).Methods("POST")
+	router.HandleFunc("/registro-ensaio", h.handleCriarEnsaio).Methods("POST")
 }
 
 func (h *Handler) handleCriarEnsaio(w http.ResponseWriter, r *http.Request) {
+	log.Println("[handleCriarEnsaio] excuted")
+
 	var payload types.RegisterEnsaioPayload
-	if err := utils.ParseJSON(r, payload); err != nil {
+	if err := r.ParseForm(); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	data, _ := time.Parse("2006-01-02", r.FormValue("data"))
+	payload = types.RegisterEnsaioPayload{
+		Nome: r.FormValue("nome"),
+		Data: data,
 	}
 
 	err := h.store.CreateEnsaio(types.Ensaio{
@@ -36,5 +47,5 @@ func (h *Handler) handleCriarEnsaio(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusCreated, nil)
+	http.Redirect(w, r, "/ensaios", http.StatusSeeOther)
 }
