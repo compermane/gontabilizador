@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/compermane/gontabilizador/cmd/render"
+	"github.com/compermane/gontabilizador/render"
 	"github.com/compermane/gontabilizador/service/ensaio"
 	"github.com/compermane/gontabilizador/service/presenca"
 	"github.com/compermane/gontabilizador/service/ritmista"
@@ -40,9 +40,10 @@ func (s *APIServer) Run() error {
 	presencaHandler := presenca.NewHandler(presencaStore)
 	presencaHandler.PresencaRoutes(subrouter)
 
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	router.HandleFunc("/", render.HomeRender)
+	renderHandler := render.NewPageHandler(ritmistaStore, ensaioStore, presencaStore)
+	router.HandleFunc("/", renderHandler.Home).Methods("GET")
 
 	log.Println("[APIServer] Listening on ", s.addr)
 	return http.ListenAndServe(s.addr, router)

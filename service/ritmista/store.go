@@ -37,6 +37,25 @@ func (s *Store) GetRitmistaByName(nome string) (*types.Ritmista, error) {
 	return u, nil
 }
 
+func (s *Store) GetAllRitmistas() ([]*types.Ritmista, error) {
+	rows, err := s.db.Query("SELECT * FROM ritmista")
+	if err != nil {
+		return nil, err
+	}
+
+	ritmistas := make([]*types.Ritmista, 0)
+	for rows.Next() {
+		p, err := scanRowIntoRitmista(rows)
+		if err != nil {
+			return nil, err
+		}
+
+		ritmistas = append(ritmistas, p)
+	}
+
+	return ritmistas, nil
+}
+
 func (s *Store) GetRitmistaByID(id int) (*types.Ritmista, error) {
 	return nil, nil
 }

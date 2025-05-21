@@ -5,6 +5,7 @@ import "time"
 type RitmistaStore interface {
 	GetRitmistaByName(nome string) (*Ritmista, error)
 	GetRitmistaByID(id int) (*Ritmista, error)
+	GetAllRitmistas() ([]*Ritmista, error)
 	CreateRitmista(Ritmista) error
 }
 
