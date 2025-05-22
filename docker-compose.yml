@@ -39,5 +39,14 @@ services:
       mysql:
         condition: service_healthy
 
+  python-listener:
+    build:
+      context: ./python
+    container_name: python-listener
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+
 volumes:
   db_data:
