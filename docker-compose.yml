@@ -6,8 +6,6 @@ services:
       context: ./db
     container_name: mysql
     restart: always
-    ports:
-      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: gontabilizador
@@ -25,8 +23,6 @@ services:
     build: .
     container_name: gontabilizador-app
     restart: always
-    ports:
-      - "3000:3000"
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
