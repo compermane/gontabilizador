@@ -13,7 +13,7 @@ Feito o clone, rode o seguinte comando do Docker
 ```bash
 docker-compose up --build
 ```
-Esse comando vai construir imagens definidas nos respectivos Dockerfile e orquestrar os contêineres para que se comuniquem corretamente. O processo leva alguns minutos. Ao ser finalizado, acesse `localhost:3000`.
+Esse comando vai construir imagens definidas nos respectivos Dockerfile e orquestrar os contêineres para que se comuniquem corretamente. O processo leva alguns minutos. Ao ser finalizado, o projeto fica disponível em internamente no docker por `gontabilizador-app:3000`.
 
 ## Desinstalando
 As imagens geradas ocupam espaço considerável em disco (>2GB). Portanto, após o uso, é recomendado que este projeto seja desinstalado. Para tanto, execute
