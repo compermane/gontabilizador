@@ -32,10 +32,10 @@ func (s *Store) BuscarEnsaioPorID(ensaio_id int) (*types.Presenca, error) {
 	rows, err := s.db.Query("SELECT * FROM ensaio WHERE ensaio_id = ?", ensaio_id)
 
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
-	p := new(types.Presenca)
+	var p *types.Presenca = nil
 	for rows.Next() {
 		p, err = scanRowsIntoPresenca(rows)
 		if err != nil {
@@ -46,8 +46,27 @@ func (s *Store) BuscarEnsaioPorID(ensaio_id int) (*types.Presenca, error) {
 	return p, nil
 }
 
-func (s *Store) UpdatePresencaRitmista(ritmista_id int) error {
-	_, err := s.db.Query("UPDATE presenca SET present = FALSE WHERE ritmista_id = ?", ritmista_id)
+func (s *Store) BuscarPresencaPorEnsaioIDRitmistaID(ensaio_id, ritmista_id int) (*types.Presenca, error) {
+	rows, err := s.db.Query("SELECT * FROM presenca WHERE ensaio_id = ? AND ritmista_id = ?", ensaio_id, ritmista_id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var p *types.Presenca = nil
+	for rows.Next() {
+		p, err = scanRowsIntoPresenca(rows)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return p, nil
+}
+
+func (s *Store) UpdatePresencaRitmista(ritmista_id int, presenca bool) error {
+	_, err := s.db.Query("UPDATE presenca SET present = ? WHERE ritmista_id = ?", presenca, ritmista_id)
 
 	if err != nil {
 		return err
@@ -84,6 +103,7 @@ func scanRowsIntoPresenca(rows *sql.Rows) (*types.Presenca, error) {
 		&presenca.IDEnsaio,
 		&presenca.IDRitmista,
 		&presenca.Presente,
+		&presenca.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err

@@ -43,17 +43,20 @@ type PresencaStore interface {
 	CreatePresenca(Presenca) error
 	ListPresencasPorEnsaio(int) ([]int, error)
 	BuscarEnsaioPorID(int) (*Presenca, error)
-	UpdatePresencaRitmista(ritmista_id int) error
+	UpdatePresencaRitmista(ritmista_id int, presenca bool) error
+	BuscarPresencaPorEnsaioIDRitmistaID(int, int) (*Presenca, error)
 }
 
 type Presenca struct {
-	IDRitmista int  `json:"id_ritmista"`
-	IDEnsaio   int  `json:"id_ensaio"`
-	Presente   bool `json:"presente"`
+	IDRitmista int  	 `json:"id_ritmista"`
+	IDEnsaio   int  	 `json:"id_ensaio"`
+	Presente   bool 	 `json:"presente"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type RegisterPresencaPayload struct {
 	IDRitmista int  `json:"id_ritmista"`
 	IDEnsaio   int  `json:"id_ensaio"`
 	Presente   bool `json:"presente"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }

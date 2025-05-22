@@ -16,21 +16,23 @@
             {{end}}
         </select>
     </form>
-    <form method="POST" action="/api/v1/registrar-presenca">
-        <input type="hidden" id="ensaio_id" name="ensaio_id" value="{{.SelectedEnsaioID}}" />
-    
-        {{range .Ritmistas}}
-        <div>
-            <label>
-                <input type="checkbox" name="presentes" value="{{.ID}}" {{if (index $.PresencaMap .ID)}}checked{{end}}>
-                {{.Nome}}
-            </label>
-        </div>
-        {{end}}
-    
-        <button type="submit">Salvar Presenças</button>
-        <a href="/">Voltar para ritmistas</a>
-        <a href="/ensaios"> Voltar para ensaios</a>
-    </form>
+{{if ne .SelectedEnsaioID 0}}
+<form method="POST" action="/api/v1/registrar-presenca">
+    <input type="hidden" id="ensaio_id" name="ensaio_id" value="{{.SelectedEnsaioID}}" />
+
+    {{range .Ritmistas}}
+    <div>
+        <label>
+            <input type="checkbox" name="presentes" value="{{.ID}}" {{if (index $.PresencaMap .ID)}}checked{{end}}>
+            {{.Nome}}
+        </label>
+    </div>
+    {{end}}
+
+    <button type="submit">Salvar Presenças</button>
+    <a href="/">Voltar para ritmistas</a>
+    <a href="/ensaios">Voltar para ensaios</a>
+</form>
+{{end}}
 </body>
 </html>

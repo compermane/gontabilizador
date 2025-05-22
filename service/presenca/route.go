@@ -46,6 +46,7 @@ func (h *Handler) handlePresenca(w http.ResponseWriter, r *http.Request) {
 
 	ritmistas_presente := make(map[int][]bool, 0)
 	for _, id := range ritmistas_ensaio {
+		// {já existe, selecionado}
 		ritmistas_presente[id] = []bool{true, false}
 	}
 	for _, id := range id_ritmistas {
@@ -60,24 +61,38 @@ func (h *Handler) handlePresenca(w http.ResponseWriter, r *http.Request) {
 				IDRitmista: id_int,
 				Presente: true,
 			}
-
-			err := h.store.CreatePresenca(types.Presenca{
-				IDRitmista: payload.IDRitmista,
-				IDEnsaio: payload.IDEnsaio,
-				Presente: payload.Presente,
-			})
+			
+			p, err := h.store.BuscarPresencaPorEnsaioIDRitmistaID(id_ensaio, id_int)
 
 			if err != nil {
 				utils.WriteError(w, http.StatusInternalServerError, err)
 				return
+			}
+
+			if p == nil {
+				err := h.store.CreatePresenca(types.Presenca{
+					IDRitmista: payload.IDRitmista,
+					IDEnsaio: payload.IDEnsaio,
+					Presente: payload.Presente,
+				})
+
+				if err != nil {
+					utils.WriteError(w, http.StatusInternalServerError, err)
+					return
+				}
+			} else {
+				err := h.store.UpdatePresencaRitmista(id_int, true) 
+				if err != nil {
+					utils.WriteError(w, http.StatusInternalServerError, err)
+					return
+				}
 			}
 		}
 	}
 
 	for key, value := range ritmistas_presente {
 		if value[1] == false {
-			err = h.store.UpdatePresencaRitmista(key)
-
+			err = h.store.UpdatePresencaRitmista(key, false)
 			if err != nil {
 				utils.WriteError(w, http.StatusInternalServerError, err)
 				return
