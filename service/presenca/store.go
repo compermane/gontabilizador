@@ -28,6 +28,34 @@ func (s *Store) CreatePresenca(presenca types.Presenca) error {
 
 	return nil
 }
+func (s *Store) BuscarEnsaioPorID(ensaio_id int) (*types.Presenca, error) {
+	rows, err := s.db.Query("SELECT * FROM ensaio WHERE ensaio_id = ?", ensaio_id)
+
+	if err != nil {
+		return nil, nil
+	}
+
+	p := new(types.Presenca)
+	for rows.Next() {
+		p, err = scanRowsIntoPresenca(rows)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return p, nil
+}
+
+func (s *Store) UpdatePresencaRitmista(ritmista_id int) error {
+	_, err := s.db.Query("UPDATE presenca SET present = FALSE WHERE ritmista_id = ?", ritmista_id)
+
+	if err != nil {
+		return err
+	}
+
+
+	return nil
+}
 
 func (s *Store) ListPresencasPorEnsaio(ensaio_id int) ([]int, error) {
 	rows, err := s.db.Query("SELECT ritmista_id FROM presenca WHERE ensaio_id = ? AND present = TRUE", ensaio_id)
@@ -47,4 +75,19 @@ func (s *Store) ListPresencasPorEnsaio(ensaio_id int) ([]int, error) {
 	}
 
 	return ids, nil
+}
+
+func scanRowsIntoPresenca(rows *sql.Rows) (*types.Presenca, error) {
+	presenca := new(types.Presenca)
+
+	err := rows.Scan(
+		&presenca.IDEnsaio,
+		&presenca.IDRitmista,
+		&presenca.Presente,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return presenca, nil
 }

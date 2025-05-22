@@ -10,12 +10,12 @@
     <form method="GET" action="/presencas">
         <label for="ensaio">Selecione o Ensaio:</label>
         <select name="ensaio_id" id="ensaio" onchange="this.form.submit()">
+            <option value="0">Selecione um ensaio</option>
             {{range .Ensaios}}
             <option value="{{.ID}}" {{if eq $.SelectedEnsaioID .ID}}selected{{end}}>{{.Nome}} {{.Data}}</option>
             {{end}}
         </select>
     </form>
-    <p>Selected Ensaio ID: {{.SelectedEnsaioID}}</p>
     <form method="POST" action="/api/v1/registrar-presenca">
         <input type="hidden" id="ensaio_id" name="ensaio_id" value="{{.SelectedEnsaioID}}" />
     
@@ -29,6 +29,8 @@
         {{end}}
     
         <button type="submit">Salvar Presenças</button>
+        <a href="/">Voltar para ritmistas</a>
+        <a href="/ensaios"> Voltar para ensaios</a>
     </form>
 </body>
 </html>

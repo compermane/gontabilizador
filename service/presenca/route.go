@@ -34,27 +34,57 @@ func (h *Handler) handlePresenca(w http.ResponseWriter, r *http.Request) {
 	id_ensaio, _ := strconv.Atoi(r.FormValue("ensaio_id"))
 	id_ritmistas := r.Form["presentes"]
 
+	if id_ensaio == 0 {
+		return 
+	}
+
+	ritmistas_ensaio, err := h.store.ListPresencasPorEnsaio(id_ensaio)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	ritmistas_presente := make(map[int][]bool, 0)
+	for _, id := range ritmistas_ensaio {
+		ritmistas_presente[id] = []bool{true, false}
+	}
 	for _, id := range id_ritmistas {
 		id_int, _ := strconv.Atoi(id)
 		log.Printf("[handlePresenca] %v %v %v %v\n", r.Form["ensaio_id"], id_ensaio, id, id_int)
-		payload = types.RegisterPresencaPayload{
-			IDEnsaio: id_ensaio,
-			IDRitmista: id_int,
-			Presente: true,
-		}
 
-		err := h.store.CreatePresenca(types.Presenca{
-			IDRitmista: payload.IDRitmista,
-			IDEnsaio: payload.IDEnsaio,
-			Presente: payload.Presente,
-		})
+		if value, ok := ritmistas_presente[id_int]; (ok && value[1] == false) {
+			value[1] = true
+		} else {
+			payload = types.RegisterPresencaPayload{
+				IDEnsaio: id_ensaio,
+				IDRitmista: id_int,
+				Presente: true,
+			}
 
-		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
-			return
+			err := h.store.CreatePresenca(types.Presenca{
+				IDRitmista: payload.IDRitmista,
+				IDEnsaio: payload.IDEnsaio,
+				Presente: payload.Presente,
+			})
+
+			if err != nil {
+				utils.WriteError(w, http.StatusInternalServerError, err)
+				return
+			}
 		}
 	}
 
+	for key, value := range ritmistas_presente {
+		if value[1] == false {
+			err = h.store.UpdatePresencaRitmista(key)
+
+			if err != nil {
+				utils.WriteError(w, http.StatusInternalServerError, err)
+				return
+			}
+		}
+	}
+	
 	log.Printf("[handlePresenca] succesfully executed on ensaio %v and ritmista %v\n", payload.IDEnsaio, payload.IDRitmista)
 	http.Redirect(w, r, "/presencas", http.StatusSeeOther)
 }

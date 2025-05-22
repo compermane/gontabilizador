@@ -22,7 +22,7 @@ func initConfig() Config {
 		Port:       getEnv("PORT", "3000"),
 		DBUser:     getEnv("DB_USER", "eugenio"),
 		DBPassword: getEnv("DB_PASSWORD", "aA@12345"),
-		DBAddress:  fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "8080")),
+		DBAddress:  fmt.Sprintf("%s:%s", getEnv("DB_HOST", "mysql"), getEnv("DB_PORT", "3306")),
 		DBName:     getEnv("DB_NAME", "gontabilizador"),
 	}
 }

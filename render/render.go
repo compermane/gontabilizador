@@ -78,12 +78,14 @@ func (ph *PageHandler) Ensaios(w http.ResponseWriter, r *http.Request) {
 func (ph *PageHandler) Presencas(w http.ResponseWriter, r *http.Request) {
 	ritmistas, err := ph.RitmistaStore.GetAllRitmistas()
 	if err != nil {
+		log.Println("[Presencas] erro ao buscar ritmistas")
 		http.Error(w, "Erro ao buscar ritmistas", http.StatusInternalServerError)
 		return
 	}
 
 	ensaios, err := ph.EnsaioStore.GetAllEnsaios()
 	if err != nil {
+		log.Println("[Presencas] erro ao buscar ensaios")
 		http.Error(w, "Erro ao buscar ensaios", http.StatusInternalServerError)
 		return
 	}
@@ -101,7 +103,7 @@ func (ph *PageHandler) Presencas(w http.ResponseWriter, r *http.Request) {
 	tmplPath := filepath.Join("static", "templates", "presencas.html")
 	tmpl, err := template.ParseFiles(tmplPath)
 	if err != nil {
-		log.Println("Erro ao carregar template:", err)
+		log.Println("[Presencas] Erro ao carregar template:", err)
 		http.Error(w, "Erro interno no servidor", http.StatusInternalServerError)
 		return
 	}
@@ -109,7 +111,7 @@ func (ph *PageHandler) Presencas(w http.ResponseWriter, r *http.Request) {
 	log.Println("[Presencas] SelectedEnsaioID:", ensaioID)
 	err = tmpl.Execute(w, data)
 	if err != nil {
-		log.Println("Erro ao renderizar template:", err)
+		log.Println("[Presencas] Erro ao renderizar template:", err)
 		http.Error(w, "Erro ao renderizar página", http.StatusInternalServerError)
 		return
 	}
